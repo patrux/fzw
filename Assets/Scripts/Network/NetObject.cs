@@ -34,7 +34,9 @@ public class NetObject : MonoBehaviour
     {
         double currentTime = PhotonNetwork.time;
         double interpolationTime = currentTime - interpolationBackTime;
+
         interpolationTime2 = interpolationTime;
+
         // We have a window of interpolationBackTime where we basically play 
         // By having interpolationBackTime the average ping, you will usually use interpolation.
         // And only if no more data arrives we will use extrapolation
