@@ -43,6 +43,7 @@ public class NetObject : MonoBehaviour
         // Check if latest state exceeds interpolation time, if this is the case then
         // it is too old and extrapolation should be used
         //Debug.Log("Extrapolate[" + !(m_BufferedState[0].timestamp > interpolationTime) + "]");
+
         if (m_BufferedState[0].timestamp > interpolationTime)
         {
             interpolating = true;
