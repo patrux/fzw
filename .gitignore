@@ -4,11 +4,6 @@
 # Unity Ignores
 $PROJDIR
 
-obj
-Temp
-.suo
-.user
-
 $PROJDIR/Library
 
 cache
@@ -35,6 +30,7 @@ Temp
 .user
 .pidb
 .userprefs
+.png
 
 $PROJDIR/Library
 
