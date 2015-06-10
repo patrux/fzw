@@ -5,7 +5,6 @@ using System.Collections.Generic;
 public class AbilityPush : Ability 
 {
     //public WeaponIcon weaponIcon;
-
     string prefabName = "ProjectilePush";
 
     List<ProjectileBase> projectiles = new List<ProjectileBase>(); // change to projectile script?
