@@ -37,13 +37,14 @@ public class ProjectilePush : ProjectileBase
         if (_other.tag == "Walls")
         {
             //Debug.Log("Collision was with a wall.");
-
-            PhotonNetwork.Destroy(gameObject);
+            if (playerOwner != null)
+                PhotonNetwork.Destroy(gameObject);
         }
         // Destroy and deal damage to player
         else if (_other.tag == "Player")
         {
-            if (_other.gameObject.GetComponent<Player>() != playerOwner)
+            //if (_other.gameObject.GetComponent<Player>() != playerOwner)
+            if (_other.gameObject.name == "LocalPlayer" && playerOwner == null)
             {
                 _other.gameObject.GetComponent<Rigidbody2D>().AddForce((_other.transform.position - transform.position).normalized * kbForce);
                 PhotonNetwork.Destroy(gameObject);
@@ -56,10 +57,9 @@ public class ProjectilePush : ProjectileBase
         // Destroy both projectiles
         else if (_other.tag == "Projectile")
         {
-            if (_other.gameObject.GetComponent<Player>() != playerOwner)
+            //Debug.Log("Collision was with another projectile.");
+            if (playerOwner != null) // this will cause problems, since two players will try to destroy
             {
-                //Debug.Log("Collision was with another projectile.");
-
                 PhotonNetwork.Destroy(_other.gameObject);
                 PhotonNetwork.Destroy(gameObject);
             }
