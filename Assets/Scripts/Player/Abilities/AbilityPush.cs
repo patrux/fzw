@@ -26,6 +26,7 @@ public class AbilityPush : Ability
 
             Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
+            // Maybe make RPC call instead
             GameObject go = (GameObject)PhotonNetwork.Instantiate(prefabName, playerOwner.transform.position, Quaternion.Euler(new Vector3(0f, 0f, 0f)), 0);
             ProjectilePush pp = go.GetComponent<ProjectilePush>();
             pp.Initialize(playerOwner, playerOwner.transform.position, mouseWorld);
