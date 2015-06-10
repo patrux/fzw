@@ -120,7 +120,7 @@ public class NetObject : MonoBehaviour
         //targetPosition = (transform.position + (lastMovement * Time.deltaTime));
         //transform.localRotation = m_BufferedState[0].rot;
 
-        targetPosition = m_BufferedState[1].pos - m_BufferedState[0].pos;
+        targetPosition = transform.localPosition + (m_BufferedState[1].pos - m_BufferedState[0].pos);
         transform.localRotation = m_BufferedState[0].rot;
     }
 
