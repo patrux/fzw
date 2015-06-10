@@ -114,15 +114,15 @@ public class PlayerControls : MonoBehaviour
                 Debug.Log("[PlayerControls::BOT] Moving randomly.");
                 randomMoveTime = 0f;
                 randomMoveDur = Random.Range(0.1f, 0.6f);
-                moveInput = new Vector2(Random.Range(-1, 2), Random.Range(-1, 2)); // non-inclusive max
+                moveInput = new Vector2(Random.Range(-1, 2), Random.Range(-1, 2)); // random int has non-inclusive max
             }
             
-            else if (debugToggleMove == 3)
+            else if (debugToggleMove == 2)
             {
                 Debug.Log("[PlayerControls::BOT] Moving left.");
                 moveInput = new Vector2(-1f, 0f);
             }
-            else if (debugToggleMove == 2)
+            else if (debugToggleMove == 3)
             {
                 Debug.Log("[PlayerControls::BOT] Moving right.");
                 moveInput = new Vector2(1f, 0f);
@@ -133,7 +133,7 @@ public class PlayerControls : MonoBehaviour
             }
         }
 
-        if (debugToggleMove == 3)
+        if (debugToggleMove == 1)
         {
             randomMoveTime += Time.deltaTime;
 
@@ -141,8 +141,8 @@ public class PlayerControls : MonoBehaviour
             {
                 randomMoveTime = 0f;
                 randomMoveDur = Random.Range(0.1f, 0.6f);
-                moveInput = new Vector2(Random.Range(-1, 2), Random.Range(-1, 2));
-                print("RandomInput[" + moveInput + "]");
+                moveInput = new Vector2(Random.Range(-1, 2), Random.Range(-1, 2));  // random int has non-inclusive max
+                //print("RandomInput[" + moveInput + "]");
             }
         }
 

@@ -3,10 +3,11 @@ using System.Collections;
 
 public class NetObject : MonoBehaviour
 {
-    double interpolationBackTime = 0.1;
-
     // Smoothing time (ms) for position updates
     float netSyncSmoothing = 0.15f;
+
+    // How far back in time we go to look at states
+    double interpolationBackTime = 0.1;
 
     // References
     Vector3 targetPosition = Vector3.zero;
@@ -27,9 +28,6 @@ public class NetObject : MonoBehaviour
 
     bool isInterpolating = false;
 
-    // Debug
-    double interpolationTime2;
-
     // Extrapolation
     Vector3 latestCorrectPos = Vector3.zero;
     Vector3 lastMovement = Vector3.zero;
@@ -40,24 +38,22 @@ public class NetObject : MonoBehaviour
         double currentTime = PhotonNetwork.time;
         double interpolationTime = currentTime - interpolationBackTime;
 
-        interpolationTime2 = interpolationTime;
-
         // We have a window of interpolationBackTime where we basically play 
         // By having interpolationBackTime the average ping, you will usually use interpolation.
         // And only if no more data arrives we will use extrapolation
         if (m_BufferedState[0].timestamp > interpolationTime)
-            Interpolate(interpolationTime);
+            Interpolate(interpolationTime, currentTime);
         else
-            Extrapolate();
+            Extrapolate(currentTime);
     }
 
     // Use interpolation
     // Check if latest state exceeds interpolation time, if this is the case then
     // it is too old and extrapolation should be used
-    void Interpolate(double _interpolationTime)
+    void Interpolate(double _interpolationTime, double _netTime)
     {
         isInterpolating = true;
-        Debug.Log("Interpolating!");
+        //Debug.Log("Interpolating!");
         //Debug.Log("[* Interpolating] m_BufferedState[0].timestamp[" + m_BufferedState[0].timestamp + "] > interpolationTime[" + interpolationTime + "] difference[" + (m_BufferedState[0].timestamp - interpolationTime) + "]");
 
         for (int i = 0; i < m_TimestampCount; i++)
@@ -98,37 +94,22 @@ public class NetObject : MonoBehaviour
 
     // Use extrapolation. Here we do something really simple and just repeat the last
     // received state. You can do clever stuff with predicting what should happen.
-    void Extrapolate()
+    void Extrapolate(double _netTime)
     {
         isInterpolating = false;
 
-        //double timeDifference = PhotonNetwork.time - lastTime;
-
-        //if (timeDifference <= 0)
-        //    timeDifference = 0.000001f;
-
-        //lastMovement = new Vector3(
-        //    (float)((transform.position.x - latestCorrectPos.x) / timeDifference),
-        //    (float)((transform.position.y - latestCorrectPos.y) / timeDifference),
-        //    0f);
-
-        //Debug.Log("Extrapolating! t[" + timeDifference + "] direction[" + FZW.WriteVector((latestCorrectPos - transform.position).normalized) + "] magnitude[" + (latestCorrectPos - transform.position).magnitude + "] state0[" + m_BufferedState[0].timestamp + "]");
-        
-        //lastTime = PhotonNetwork.time;
-        //latestCorrectPos = m_BufferedState[0].pos;
-
-        //targetPosition = (transform.position + (lastMovement * Time.deltaTime));
-        //transform.localRotation = m_BufferedState[0].rot;
-
-        targetPosition = transform.localPosition + (m_BufferedState[1].pos - m_BufferedState[0].pos);
+        targetPosition = Vector3.Lerp(transform.localPosition, m_BufferedState[0].pos, Time.deltaTime * 20);
         transform.localRotation = m_BufferedState[0].rot;
+
+        //Debug.Log("delta[" + FZW.WriteVector(targetPosition - transform.position) + "] position[" + FZW.WriteVector(transform.position) + "] direction[" + FZW.WriteVector((m_BufferedState[0].pos - m_BufferedState[1].pos)) + "] targetPosition[" + FZW.WriteVector(targetPosition) + "] TimeDiff[" + (float)(_netTime - m_BufferedState[0].timestamp) + "]");
     }
 
     public float linePower = 2f;
 
     void Update()
     {
-        transform.position = Vector3.Lerp(transform.position, targetPosition, netSyncSmoothing);
+        //transform.position = Vector3.Lerp(transform.position, targetPosition, netSyncSmoothing);
+        transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 20);
 
         Vector3 direction = (targetPosition - transform.position).normalized;
 
@@ -194,27 +175,18 @@ public class NetObject : MonoBehaviour
     public void SetNetSyncSmoothing(float _value) { netSyncSmoothing = _value; }
 
     // *** Create an information display window
-    Rect infoWindowRect = new Rect(Screen.width - 320, 10, 310, 160);
+    //Rect infoWindowRect = new Rect(Screen.width - 320, 10, 310, 160);
 
-    void OnGUI()
-    {
-        infoWindowRect = GUILayout.Window(0, infoWindowRect, InfoWindow, "NetObject");
-    }
-
-    void InfoWindow(int windowID)
-    {
-        GUILayout.Label(string.Format("m_BufferedState[0]: ({0}, {1})", m_BufferedState[0].pos.x, m_BufferedState[0].pos.y));
-        GUILayout.Label(string.Format("m_BufferedState[" + (m_BufferedState.Length - 1) + "]: ({0}, {1})", m_BufferedState[m_BufferedState.Length - 1].pos.x, m_BufferedState[m_BufferedState.Length - 1].pos.y));
-        GUILayout.Label(string.Format("differenceState: {0}", m_BufferedState[0].timestamp - m_BufferedState[m_BufferedState.Length - 1].timestamp));
-        GUILayout.Label(string.Format("difference: {0}", m_BufferedState[0].timestamp - interpolationTime2));
-        GUILayout.Label(string.Format("interpolating: {0}", isInterpolating));
-    }
+    //void OnGUI()
+    //{
+    //    infoWindowRect = GUILayout.Window(0, infoWindowRect, InfoWindow, "NetObject");
+    //}
 
     //void InfoWindow(int windowID)
     //{
     //    GUILayout.Label(string.Format("m_BufferedState[0]: ({0}, {1})", m_BufferedState[0].pos.x, m_BufferedState[0].pos.y));
-    //    GUILayout.Label(string.Format("m_BufferedState[8]: ({0}, {1})", m_BufferedState[8].pos.x, m_BufferedState[8].pos.y));
-    //    GUILayout.Label(string.Format("differenceState: {0}", m_BufferedState[0].timestamp - m_BufferedState[m_BufferedState.Length-1].timestamp));
+    //    GUILayout.Label(string.Format("m_BufferedState[" + (m_BufferedState.Length - 1) + "]: ({0}, {1})", m_BufferedState[m_BufferedState.Length - 1].pos.x, m_BufferedState[m_BufferedState.Length - 1].pos.y));
+    //    GUILayout.Label(string.Format("differenceState: {0}", m_BufferedState[0].timestamp - m_BufferedState[m_BufferedState.Length - 1].timestamp));
     //    GUILayout.Label(string.Format("difference: {0}", m_BufferedState[0].timestamp - interpolationTime2));
     //    GUILayout.Label(string.Format("interpolating: {0}", isInterpolating));
 

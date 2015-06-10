@@ -103,6 +103,7 @@ public class Player : MonoBehaviour
     /// </summary>
     public void InitializeRemotePlayer()
     {
+        Destroy(body);
         netObject = gameObject.AddComponent<NetObject>();
         photonView.ObservedComponents.Clear();
         photonView.ObservedComponents.Add(netObject);
