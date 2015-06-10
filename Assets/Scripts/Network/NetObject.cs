@@ -125,22 +125,10 @@ public class NetObject : MonoBehaviour
     }
 
     public float linePower = 2f;
-    SpriteRenderer sr;
 
     void Update()
     {
         transform.position = Vector3.Lerp(transform.position, targetPosition, netSyncSmoothing);
-
-        //if (true)
-        //{
-        //    if (sr == null)
-        //        sr = gameObject.GetComponentInChildren<SpriteRenderer>();
-
-        //    if (isInterpolating)
-        //        sr.color = Color.cyan;
-        //    else
-        //        sr.color = Color.blue;
-        //}
 
         Vector3 direction = (targetPosition - transform.position).normalized;
 
