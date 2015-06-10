@@ -37,6 +37,7 @@ public class GameLogic : MonoBehaviour
         // Debug
         public static KeyCode consoleWindow = KeyCode.F1;
         public static KeyCode debugUpdateNetSettings = KeyCode.F4;
+        public static KeyCode debugMoveToggle = KeyCode.G;
 
         // Player
         public static KeyCode moveUp = KeyCode.W;
